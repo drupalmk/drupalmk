@@ -86,41 +86,33 @@
   let targetColor = '#ff0000';
   let falseTargetColor = '#00ff00';
 
-  // Dodajemy dźwięk
-  const beep = new Audio('https://www.soundjay.com/button/beep-07.wav');  // URL do dźwięku
-
   // Aktualizacja wartości w interfejsie
   gridSizeSlider.addEventListener('input', () => {
     gridSize = gridSizeSlider.value;
     document.getElementById('gridSizeValue').textContent = gridSize;
     document.getElementById('gridSizeValue2').textContent = gridSize;
     updateGrid();
-    beep.play(); // Odtwórz dźwięk przy zmianie
   });
 
   circleSizeSlider.addEventListener('input', () => {
     circleSize = circleSizeSlider.value;
     document.getElementById('circleSizeValue').textContent = circleSize;
     updateGrid();
-    beep.play(); // Odtwórz dźwięk przy zmianie
   });
 
   targetTimeInput.addEventListener('input', () => {
     targetTime = targetTimeInput.value * 1000; // przekształcenie na milisekundy
     updateGrid();
-    beep.play(); // Odtwórz dźwięk przy zmianie
   });
 
   targetColorInput.addEventListener('input', () => {
     targetColor = targetColorInput.value;
     updateGrid();
-    beep.play(); // Odtwórz dźwięk przy zmianie
   });
 
   falseTargetColorInput.addEventListener('input', () => {
     falseTargetColor = falseTargetColorInput.value;
     updateGrid();
-    beep.play(); // Odtwórz dźwięk przy zmianie
   });
 
   // Tworzenie siatki
