@@ -13,6 +13,7 @@
       height: 100vh;
       position: relative;
       flex-direction: column;
+      overflow: hidden;
     }
     .grid {
       display: grid;
@@ -20,6 +21,7 @@
       grid-template-rows: repeat(10, 80px);
       gap: 4px;
       position: relative;
+      overflow: hidden;
     }
     .cell {
       width: 80px;
@@ -40,6 +42,9 @@
     .controls {
       margin-top: 20px;
       color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
     .controls label {
       margin-right: 10px;
@@ -82,9 +87,12 @@
 
   let gridSize = 10;
   let circleSize = 80;
-  let targetTime = 2000;
+  let targetTime = 2000;  // czas początkowy w milisekundach
   let targetColor = '#ff0000';
   let falseTargetColor = '#00ff00';
+
+  // Dodajemy dźwięk
+  const beep = new Audio('https://www.soundjay.com/button/beep-07.wav');  // URL do dźwięku
 
   // Aktualizacja wartości w interfejsie
   gridSizeSlider.addEventListener('input', () => {
@@ -92,37 +100,41 @@
     document.getElementById('gridSizeValue').textContent = gridSize;
     document.getElementById('gridSizeValue2').textContent = gridSize;
     updateGrid();
+    // beep.play(); // Odtwórz dźwięk przy zmianie
   });
 
   circleSizeSlider.addEventListener('input', () => {
     circleSize = circleSizeSlider.value;
     document.getElementById('circleSizeValue').textContent = circleSize;
     updateGrid();
+    // beep.play(); // Odtwórz dźwięk przy zmianie
   });
 
   targetTimeInput.addEventListener('input', () => {
     targetTime = targetTimeInput.value * 1000; // przekształcenie na milisekundy
-    updateGrid();
+    clearInterval(intervalId); // Zatrzymanie poprzedniego interwału
+    intervalId = setInterval(updateGrid, targetTime); // Ustawienie nowego interwału
+    // beep.play(); // Odtwórz dźwięk przy zmianie
   });
 
   targetColorInput.addEventListener('input', () => {
     targetColor = targetColorInput.value;
     updateGrid();
+    // beep.play(); // Odtwórz dźwięk przy zmianie
   });
 
   falseTargetColorInput.addEventListener('input', () => {
     falseTargetColor = falseTargetColorInput.value;
     updateGrid();
+    // beep.play(); // Odtwórz dźwięk przy zmianie
   });
 
-  // Tworzenie siatki
+  // Funkcja do tworzenia nowej siatki
   function createGrid() {
     grid.innerHTML = ''; // reset siatki
     for (let i = 0; i < gridSize * gridSize; i++) {
       const cell = document.createElement('div');
       cell.classList.add('cell');
-      cell.style.width = `${circleSize}px`;
-      cell.style.height = `${circleSize}px`;
       grid.appendChild(cell);
       cells.push(cell);
     }
@@ -149,6 +161,8 @@
       cell.className = 'cell';
       cell.style.backgroundColor = '#222';
       cell.style.boxShadow = '0 0 1px 1px #555';
+      cell.style.width = `${circleSize}px`;
+      cell.style.height = `${circleSize}px`;
     });
 
     // Czerwony cel
@@ -168,7 +182,7 @@
 
   // Inicjalizacja
   createGrid();
-  setInterval(updateGrid, targetTime);
+  let intervalId = setInterval(updateGrid, targetTime); // Ustawienie początkowego interwału
   updateGrid();
 </script>
 </body>
