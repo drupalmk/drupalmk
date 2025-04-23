@@ -12,6 +12,7 @@
       align-items: center;
       height: 100vh;
       position: relative;
+      flex-direction: column;
     }
     .grid {
       display: grid;
@@ -36,27 +37,112 @@
       background-color: green;
       box-shadow: 0 0 10px 5px green;
     }
+    .controls {
+      margin-top: 20px;
+      color: white;
+    }
+    .controls label {
+      margin-right: 10px;
+    }
+    .controls input {
+      margin: 5px;
+    }
   </style>
 </head>
 <body>
 <div class="grid" id="grid"></div>
 
+<div class="controls">
+  <label for="gridSize">Wielkość siatki (10x10):</label>
+  <input type="range" id="gridSize" min="5" max="15" value="10">
+  <span id="gridSizeValue">10</span>x<span id="gridSizeValue2">10</span><br>
+
+  <label for="circleSize">Wielkość kółek:</label>
+  <input type="range" id="circleSize" min="30" max="100" value="80">
+  <span id="circleSizeValue">80</span>px<br>
+
+  <label for="targetTime">Czas pojawiania się kółek (w sekundach):</label>
+  <input type="number" id="targetTime" min="1" max="10" value="2"> sekundy<br>
+
+  <label for="targetColor">Kolor celu:</label>
+  <input type="color" id="targetColor" value="#ff0000"><br>
+
+  <label for="falseTargetColor">Kolor kółka neutralnego:</label>
+  <input type="color" id="falseTargetColor" value="#00ff00"><br>
+</div>
+
 <script>
   const grid = document.getElementById('grid');
   const cells = [];
+  const gridSizeSlider = document.getElementById('gridSize');
+  const circleSizeSlider = document.getElementById('circleSize');
+  const targetTimeInput = document.getElementById('targetTime');
+  const targetColorInput = document.getElementById('targetColor');
+  const falseTargetColorInput = document.getElementById('falseTargetColor');
 
-  // Tworzenie siatki 10x10
-  for (let i = 0; i < 100; i++) {
-    const cell = document.createElement('div');
-    cell.classList.add('cell');
-    grid.appendChild(cell);
-    cells.push(cell);
+  let gridSize = 10;
+  let circleSize = 80;
+  let targetTime = 2000;
+  let targetColor = '#ff0000';
+  let falseTargetColor = '#00ff00';
+
+  // Dodajemy dźwięk
+  const beep = new Audio('https://www.soundjay.com/button/beep-07.wav');  // URL do dźwięku
+
+  // Aktualizacja wartości w interfejsie
+  gridSizeSlider.addEventListener('input', () => {
+    gridSize = gridSizeSlider.value;
+    document.getElementById('gridSizeValue').textContent = gridSize;
+    document.getElementById('gridSizeValue2').textContent = gridSize;
+    updateGrid();
+    beep.play(); // Odtwórz dźwięk przy zmianie
+  });
+
+  circleSizeSlider.addEventListener('input', () => {
+    circleSize = circleSizeSlider.value;
+    document.getElementById('circleSizeValue').textContent = circleSize;
+    updateGrid();
+    beep.play(); // Odtwórz dźwięk przy zmianie
+  });
+
+  targetTimeInput.addEventListener('input', () => {
+    targetTime = targetTimeInput.value * 1000; // przekształcenie na milisekundy
+    updateGrid();
+    beep.play(); // Odtwórz dźwięk przy zmianie
+  });
+
+  targetColorInput.addEventListener('input', () => {
+    targetColor = targetColorInput.value;
+    updateGrid();
+    beep.play(); // Odtwórz dźwięk przy zmianie
+  });
+
+  falseTargetColorInput.addEventListener('input', () => {
+    falseTargetColor = falseTargetColorInput.value;
+    updateGrid();
+    beep.play(); // Odtwórz dźwięk przy zmianie
+  });
+
+  // Tworzenie siatki
+  function createGrid() {
+    grid.innerHTML = ''; // reset siatki
+    for (let i = 0; i < gridSize * gridSize; i++) {
+      const cell = document.createElement('div');
+      cell.classList.add('cell');
+      cell.style.width = `${circleSize}px`;
+      cell.style.height = `${circleSize}px`;
+      grid.appendChild(cell);
+      cells.push(cell);
+    }
+    grid.style.gridTemplateColumns = `repeat(${gridSize}, ${circleSize + 4}px)`;
+    grid.style.gridTemplateRows = `repeat(${gridSize}, ${circleSize + 4}px)`;
   }
 
+  // Funkcja do losowania indeksów
   function getRandomIndices(count, exclude = []) {
     const indices = new Set();
     while (indices.size < count) {
-      const idx = Math.floor(Math.random() * 100);
+      const idx = Math.floor(Math.random() * (gridSize * gridSize));
       if (!exclude.includes(idx)) {
         indices.add(idx);
       }
@@ -64,22 +150,34 @@
     return [...indices];
   }
 
+  // Funkcja aktualizująca siatkę
   function updateGrid() {
     // Reset
-    cells.forEach(cell => cell.className = 'cell');
+    cells.forEach(cell => {
+      cell.className = 'cell';
+      cell.style.backgroundColor = '#222';
+      cell.style.boxShadow = '0 0 1px 1px #555';
+    });
 
     // Czerwony cel
-    const targetIndex = Math.floor(Math.random() * 100);
+    const targetIndex = Math.floor(Math.random() * (gridSize * gridSize));
     cells[targetIndex].classList.add('target');
+    cells[targetIndex].style.backgroundColor = targetColor;
+    cells[targetIndex].style.boxShadow = `0 0 10px 6px ${targetColor}`;
 
     // Zielone fałszywe cele
     const falseTargets = getRandomIndices(3, [targetIndex]);
-    falseTargets.forEach(i => cells[i].classList.add('false-target'));
+    falseTargets.forEach(i => {
+      cells[i].classList.add('false-target');
+      cells[i].style.backgroundColor = falseTargetColor;
+      cells[i].style.boxShadow = `0 0 10px 5px ${falseTargetColor}`;
+    });
   }
 
-  // Start
+  // Inicjalizacja
+  createGrid();
+  setInterval(updateGrid, targetTime);
   updateGrid();
-  setInterval(updateGrid, 2000);
 </script>
 </body>
 </html>
