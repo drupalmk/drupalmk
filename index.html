@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <title>Trening Celowniczy</title>
+  <style>
+    body {
+      background-color: black;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      position: relative;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(10, 80px);
+      grid-template-rows: repeat(10, 80px);
+      gap: 4px;
+      position: relative;
+    }
+    .cell {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background-color: #222;
+      box-shadow: 0 0 1px 1px #555;
+      transition: background-color 0.3s;
+    }
+    .target {
+      background-color: red;
+      box-shadow: 0 0 10px 6px red;
+    }
+    .false-target {
+      background-color: green;
+      box-shadow: 0 0 10px 5px green;
+    }
+  </style>
+</head>
+<body>
+<div class="grid" id="grid"></div>
+
+<script>
+  const grid = document.getElementById('grid');
+  const cells = [];
+
+  // Tworzenie siatki 10x10
+  for (let i = 0; i < 100; i++) {
+    const cell = document.createElement('div');
+    cell.classList.add('cell');
+    grid.appendChild(cell);
+    cells.push(cell);
+  }
+
+  function getRandomIndices(count, exclude = []) {
+    const indices = new Set();
+    while (indices.size < count) {
+      const idx = Math.floor(Math.random() * 100);
+      if (!exclude.includes(idx)) {
+        indices.add(idx);
+      }
+    }
+    return [...indices];
+  }
+
+  function updateGrid() {
+    // Reset
+    cells.forEach(cell => cell.className = 'cell');
+
+    // Czerwony cel
+    const targetIndex = Math.floor(Math.random() * 100);
+    cells[targetIndex].classList.add('target');
+
+    // Zielone fałszywe cele
+    const falseTargets = getRandomIndices(3, [targetIndex]);
+    falseTargets.forEach(i => cells[i].classList.add('false-target'));
+  }
+
+  // Start
+  updateGrid();
+  setInterval(updateGrid, 2000);
+</script>
+</body>
+</html>
